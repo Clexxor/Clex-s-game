@@ -7,7 +7,7 @@
 #-----------------------------------------------------------------
 #This changes the experience values needed for each level up 
 #to the desired values
-#-----------------------------------------------------------------
+#--------------------------------------------------------
 
 class Game_Actor < Game_Battler 
   
