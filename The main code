@@ -7,7 +7,7 @@
 #-----------------------------------------------------------------
 #This changes the experience values needed for each level up 
 #to the desired values
-#--------------------------------------------------------
+#-----------------------------------------------------------------
 
 class Game_Actor < Game_Battler 
   
@@ -113,9 +113,9 @@ class Tactics_Character
   
   def set_hstats(hmax,hcurrent,ac)
     
-    @ac = ac
     @hpmax = hmax
     @hpcurrent = hcurrent
+    @ac = ac
 
   end
   
@@ -383,7 +383,7 @@ class Tactics_Battle
   def initialize
     
     @combatants = []
-    @combantantcount = 0
+    @combatantcount = 0
     @turnorder = []
     @nextturn = 0
     @roundturn = 1
@@ -394,6 +394,7 @@ class Tactics_Battle
     @moveroute = []
     @currentmovenum = 0
     @makemovenum = 0
+    @selected = 0
     
   end
   
@@ -403,10 +404,18 @@ class Tactics_Battle
 
   def determine_combatants
     
-    @combatantcount = 2
-    @combatants = [$morton, $dirk]
+    $game_variables[45] = @combatantcount
     
   end
+  
+  
+  def add_combatant(selected)
+    
+    @combatants[@combatantcount] = selected
+    @combatantcount += 1
+  
+  end
+  
   
 #---------------------------------------------------------------------
 # Determines the turn order
