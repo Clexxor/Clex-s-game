@@ -808,6 +808,58 @@ class Tactics_Battle
      end
 
 #---------------------------------------------------------------------
+# When choosing Aoe Location
+#---------------------------------------------------------------------
+
+def calculate_aoe
+  
+  size = $game_variables[46]
+  x = $game_variables[17]
+  y = $game_variables[18]
+  y += 1
+  area = 1
+  direction = 1
+  
+  for area in 1..size
+    for side in 1..area
+      if direction == 1
+        y += 1
+        x += 1
+      elsif direction == 2
+        y += 1
+        x -= 1
+      elsif direction == 3
+        y -= 1
+        x -= 1
+      else
+        y -= 1
+        x += 1
+      end
+      
+      #checks coordinates of events against saved coordinates
+         $game_map.events.each do |i, event|
+           
+           evx = event.x
+           evy = event.y
+           if x == evx and y == evy
+             event.get_charid
+           end
+           
+         end
+         
+      side +=1
+    end
+    unless direction == 4
+      direction +=1
+    else
+      direction = 1
+    end
+    area += 1
+  end
+  
+end
+
+#---------------------------------------------------------------------
 # Output test for debugging
 #---------------------------------------------------------------------
 
