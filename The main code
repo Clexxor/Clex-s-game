@@ -7,7 +7,7 @@
 #-----------------------------------------------------------------
 #This changes the experience values needed for each level up 
 #to the desired values
-#--------------------------------------------------------
+#-----------------------------------------------------------------
 
 class Game_Actor < Game_Battler 
   
@@ -113,9 +113,9 @@ class Tactics_Character
   
   def set_hstats(hmax,hcurrent,ac)
     
-    @ac = ac
     @hpmax = hmax
     @hpcurrent = hcurrent
+    @ac = ac
 
   end
   
@@ -383,7 +383,7 @@ class Tactics_Battle
   def initialize
     
     @combatants = []
-    @combantantcount = 0
+    @combatantcount = 0
     @turnorder = []
     @nextturn = 0
     @roundturn = 1
@@ -394,6 +394,7 @@ class Tactics_Battle
     @moveroute = []
     @currentmovenum = 0
     @makemovenum = 0
+    @selected = 0
     
   end
   
@@ -403,10 +404,18 @@ class Tactics_Battle
 
   def determine_combatants
     
-    @combatantcount = 2
-    @combatants = [$morton, $dirk]
+    $game_variables[45] = @combatantcount
     
   end
+  
+  
+  def add_combatant(selected)
+    
+    @combatants[@combatantcount] = selected
+    @combatantcount += 1
+  
+  end
+  
   
 #---------------------------------------------------------------------
 # Determines the turn order
@@ -799,6 +808,58 @@ class Tactics_Battle
      end
 
 #---------------------------------------------------------------------
+# When choosing Aoe Location
+#---------------------------------------------------------------------
+
+def calculate_aoe
+  
+  size = $game_variables[46]
+  x = $game_variables[17]
+  y = $game_variables[18]
+  y += 1
+  area = 1
+  direction = 1
+  
+  for area in 1..size
+    for side in 1..area
+      if direction == 1
+        y += 1
+        x += 1
+      elsif direction == 2
+        y += 1
+        x -= 1
+      elsif direction == 3
+        y -= 1
+        x -= 1
+      else
+        y -= 1
+        x += 1
+      end
+      
+      #checks coordinates of events against saved coordinates
+         $game_map.events.each do |i, event|
+           
+           evx = event.x
+           evy = event.y
+           if x == evx and y == evy
+             event.get_charid
+           end
+           
+         end
+         
+      side +=1
+    end
+    unless direction == 4
+      direction +=1
+    else
+      direction = 1
+    end
+    area += 1
+  end
+  
+end
+
+#---------------------------------------------------------------------
 # Output test for debugging
 #---------------------------------------------------------------------
 
@@ -815,3 +876,4 @@ end
     
   
 rgss_main { SceneManager.run }
+
