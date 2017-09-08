@@ -395,6 +395,10 @@ class Tactics_Battle
     @currentmovenum = 0
     @makemovenum = 0
     @selected = 0
+    @teamone = 0
+    @teamtwo = 0
+    @teamonecount = 0
+    @teamtwocount = 0
     
   end
   
@@ -409,11 +413,21 @@ class Tactics_Battle
   end
   
   
-  def add_combatant(selected)
+  def add_combatant(selected, team)
     
     @combatants[@combatantcount] = selected
     @combatantcount += 1
   
+    if team == 1 then
+      @teamone[@teamonecount] = selected
+      @teamonecount += 1
+    elsif team == 2 then
+      @teamtwo[@teamtwocount] = selected
+      @teamtwocount += 1
+    else
+      puts error
+    end
+    
   end
   
   
@@ -871,9 +885,25 @@ end
     $game_variables[99] = 0
     $game_variables[100] = 0
   end
-end
-  
-    
-  
-rgss_main { SceneManager.run }
 
+  
+#---------------------------------------------------------------------
+# Testing event labeling and tracking
+#---------------------------------------------------------------------    
+  
+
+def tracking
+  
+ $game_map.events.each do |i, event|
+           
+           evx = event.x
+           evy = event.y
+           evchar = event.get_charid
+           event.get_event
+           
+         end
+         
+       end
+     end
+      
+rgss_main { SceneManager.run }
