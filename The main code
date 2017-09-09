@@ -395,11 +395,12 @@ class Tactics_Battle
     @currentmovenum = 0
     @makemovenum = 0
     @selected = 0
-    @teamone = 0
-    @teamtwo = 0
+    @teamone = []
+    @teamtwo = []
     @teamonecount = 0
     @teamtwocount = 0
-    
+    @teamoneplace = 0
+    @teamtwoplace = 0
   end
   
 #---------------------------------------------------------------------
@@ -430,7 +431,42 @@ class Tactics_Battle
     
   end
   
+  def teamshuffle
+    @teamone.shuffle!
+    @teamtwo.shuffle!
+    @teamoneplace = 0
+    @teamtwoplace = 0
+  end
   
+  def teamoneplace
+    puts @teamone[@teamoneplace].storeid
+    puts @teamoneplace 
+    puts "this is teamoneplace"
+    @teamoneplace += 1
+    
+  end
+  
+  def getteamoneplace
+    return @teamone[@teamoneplace].storeid
+    
+  end
+  
+  def teamtwoplace
+    puts @teamtwo[@teamtwoplace].storeid
+    puts @teamtwoplace 
+    puts "this is teamtwoplace"
+    @teamtwoplace += 1
+  end
+  
+  def getteamtwoplace
+    return @teamtwo[@teamtwoplace].storeid
+
+  end
+  
+  def getputs
+    puts @teamtwo
+    puts @teamone
+    end
 #---------------------------------------------------------------------
 # Determines the turn order
 #---------------------------------------------------------------------
@@ -591,6 +627,35 @@ class Tactics_Battle
       @makemovenum = @makemovenum + 1
       
     end
+    
+  end
+  
+  def moveroutemakemarktwo(event)
+    
+    mr = RPG::MoveRoute.new
+    mr.repeat = false
+    mr.wait = true
+    mr.list = []
+    moveroutestep = 0
+
+    mr.list.push( RPG::MoveCommand.new(37, []) )
+    for w in 1..@currentmovenum
+    mr.list.push( RPG::MoveCommand.new(@moveroute[moveroutestep], []) )
+    
+    moveroutestep += 1
+    w += 1
+    end
+    mr.list.push( RPG::MoveCommand.new(38, []) )
+    mr.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(mr)
+    Fiber.yield while event.move_route_forcing
+
+      
+      @currentmovenum = 0
+      @makemovenum = 0
+      @moveroute = []
+      
     
   end
   
