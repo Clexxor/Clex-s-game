@@ -380,6 +380,8 @@ end
 #---------------------------------------------------------------------
 class Tactics_Battle
   
+  attr_reader   :combatants
+  
   def initialize
     
     @combatants = []
@@ -439,7 +441,6 @@ class Tactics_Battle
   end
   
   def teamoneplace
-    puts @teamone[@teamoneplace].storeid
     puts @teamoneplace 
     puts "this is teamoneplace"
     @teamoneplace += 1
@@ -447,26 +448,33 @@ class Tactics_Battle
   end
   
   def getteamoneplace
-    return @teamone[@teamoneplace].storeid
+    unless @teamtwo[@teamoneplace] == nil then
+    
+      return @teamone[@teamoneplace].storeid
+    
+    end
     
   end
   
   def teamtwoplace
-    puts @teamtwo[@teamtwoplace].storeid
     puts @teamtwoplace 
     puts "this is teamtwoplace"
     @teamtwoplace += 1
   end
   
   def getteamtwoplace
-    return @teamtwo[@teamtwoplace].storeid
+    unless @teamtwo[@teamtwoplace] == nil then
+    
+      return @teamtwo[@teamtwoplace].storeid
 
+    end
+    
   end
   
   def getputs
     puts @teamtwo
     puts @teamone
-    end
+  end
 #---------------------------------------------------------------------
 # Determines the turn order
 #---------------------------------------------------------------------
@@ -610,23 +618,27 @@ class Tactics_Battle
 # Move route making moves
 #---------------------------------------------------------------------
     
-  def moveroutemake
+  def setthrough(event)
     
-    $game_variables[22] = @moveroute[@makemovenum]
+    through = RPG::MoveRoute.new
+    through.list = []
 
-    if @currentmovenum == 0 then
-      
-      $game_switches[12] = true
-      @currentmovenum = 0
-      @makemovenum = 0
-      @moveroute = []
-      
-    else
-      
-      @currentmovenum = @currentmovenum - 1
-      @makemovenum = @makemovenum + 1
-      
-    end
+    through.list.push( RPG::MoveCommand.new(37, []) )
+    through.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(through)
+    
+  end
+  
+  def setthroughoff(event)
+    
+    through = RPG::MoveRoute.new
+    through.list = []
+
+    through.list.push( RPG::MoveCommand.new(38, []) )
+    through.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(through)
     
   end
   
@@ -672,6 +684,7 @@ class Tactics_Battle
   def settarget(target)
     
     @target = target
+    $game_variables[53] = target.storeid
     
   end
   
