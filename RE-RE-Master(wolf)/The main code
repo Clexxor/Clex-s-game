@@ -1,0 +1,987 @@
+#==============================================================================
+# ** Main
+#------------------------------------------------------------------------------
+#  This processing is executed after module and class definition is finished.
+#==============================================================================
+
+#-----------------------------------------------------------------
+#This changes the experience values needed for each level up 
+#to the desired values
+#-----------------------------------------------------------------
+
+class Game_Actor < Game_Battler 
+  
+  def exp_for_level(level)
+    
+    return [0,300,900,2700,6500,14000,23000,34000,48000,64000,85000,100000,120000,140000,165000,195000,225000,265000,305000,355000,999999999][level-1]  
+    
+  end
+
+end
+
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+# TACTICS CHARACTER SETUP ===================================================
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+class Tactics_Character
+  
+  #initialize needed variables
+  def initialize
+    
+    @character_id = 0
+    @str = 0
+    @dex = 0
+    @con = 0
+    @int = 0
+    @wis = 0
+    @cha = 0
+    @strmod = 0
+    @dexmod = 0
+    @conmod = 0
+    @intmod = 0
+    @wismod = 0
+    @chamod = 0
+    @speed = 0
+    @proficiency = 0
+    @dmgminmelee = 0
+    @dmgmaxmelee = 0
+    @dmgminrange = 0
+    @dmgmaxrange = 0
+    @meleemod = 0
+    @rangemod = 0
+    @initiative = 0
+    @ac = 0
+    @hpmax = 0
+    @hpcurrent = 0
+    @initiativeroll = 0
+    @meleerange = 0
+    @rangerange = 0
+    
+  end
+  
+  #------------------------------------------------------
+  #this method sets the character id to match the actor
+  #------------------------------------------------------
+  
+  def setid(newvalue)
+    
+    @character_id = newvalue
+    
+  end
+  
+  #------------------------------------------------------
+  #this method sets the base stats for a character
+  #------------------------------------------------------
+  
+  def set_basestats(st,de,co,it,wi,ch)
+    
+    @str = st
+    @dex = de
+    @con = co
+    @int = it
+    @wis = wi
+    @cha = ch
+    
+    #These set the modifiers
+    
+    @strmod = (@str - 10)/2
+    @dexmod = (@dex - 10)/2
+    @conmod = (@con - 10)/2
+    @intmod = (@int - 10)/2
+    @wismod = (@wis - 10)/2
+    @chamod = (@cha - 10)/2
+    
+  end
+  
+  #------------------------------------------------------
+  #This sets the secondary stats
+  #------------------------------------------------------
+  
+  def set_secstats(sp,pr,init,act)
+    
+    @speed = sp
+    @proficiency = pr
+    @initiative = init
+    @actioncount = act
+
+  end
+
+  #------------------------------------------------------
+  #This sets the health and armor stats
+  #------------------------------------------------------
+  
+  def set_hstats(hmax,hcurrent,ac)
+    
+    @hpmax = hmax
+    @hpcurrent = hcurrent
+    @ac = ac
+
+  end
+  
+  #------------------------------------------------------
+  #This sets the damage ranges
+  #------------------------------------------------------
+  
+  def set_dstats(melee,range,dmin,dmax,dminr,dmaxr,mr,rr)
+    
+    @meleemod = melee
+    @rangemod = range
+    @dmgminmelee = dmin
+    @dmgmaxmelee = dmax
+    @dmgminrange = dminr
+    @dmgmaxrange = dmaxr
+    @meleerange = mr
+    @rangerange = rr
+    
+  end
+  
+  #------------------------------------------------------
+  #These let you modify the values of the stats
+  #------------------------------------------------------
+  
+  #increase the strength value
+  def increase_str(newvalue)
+    
+    @str = @str + newvalue
+    @strmod = (@str - 10)/2
+    
+  end
+  
+  #decrease the strength value
+  def decrease_str(newvalue)
+    
+    @str = @str - newvalue
+    @strmod = (@str - 10)/2
+    
+  end
+  
+  #increase the dexterity value
+  def increase_dex(newvalue)
+    
+    @dex = @dex + newvalue
+    @dexmod = (@dex - 10)/2
+  
+  end
+  
+  #decrease the dexterity value
+  def decrease_dex(newvalue)
+    
+    @dex = @dex - newvalue
+    @dexmod = (@dex - 10)/2
+    
+  end
+  
+  #increase the constitution value
+  def increase_con(newvalue)
+    
+    @con = @con + newvalue
+    @conmod = (@con - 10)/2
+    
+  end
+  
+  #decrease the constitution value
+  def decrease_str(newvalue)
+    
+    @con = @con - newvalue
+    @conmod = (@con - 10)/2
+    
+  end
+  
+  #increase the intelligence value
+  def increase_int(newvalue)
+    
+    @int = @int + newvalue
+    @intmod = (@int - 10)/2
+    
+  end
+  
+  #decrease the intelligence value
+  def decrease_int(newvalue)
+    
+    @int = @int - newvalue
+    @intmod = (@int - 10)/2
+    
+  end
+  
+  #increase the wisdon value
+  def increase_wis(newvalue)
+    
+    @wis = @wis + newvalue
+    @wismod = (@wis - 10)/2
+    
+  end
+  
+  #decrease the wisdom value
+  def decrease_wis(newvalue)
+    
+    @wis = @wis - newvalue
+    @wismod = (@wis - 10)/2
+    
+  end
+  
+  #increase the charisma value
+  def increase_cha(newvalue)
+    
+    @cha = @cha + newvalue
+    @chamod = (@cha - 10)/2
+    
+  end
+  
+  #decrease the charisma value
+  def decrease_str(newvalue)
+    
+    @cha = @cha - newvalue
+    @chamod = (@cha - 10)/2
+    
+  end
+  
+  #-------------------------------------------------------
+  # This deals damage to the character
+  #-------------------------------------------------------
+  
+  def healthdamage
+    
+    @hpcurrent = @hpcurrent - $game_variables[33]
+    
+  end
+  
+  #-------------------------------------------------------
+  # This rolls initiative
+  #-------------------------------------------------------
+  
+  def initiativeroll
+    
+    @initiativeroll = 1+ rand(20) + @initiative
+    
+  end
+  
+  #-------------------------------------------------------
+  # Return methods for stats
+  #------------------------------------------------------- 
+  
+  #initiative
+  
+  def storeinitiative
+    
+    return @initiativeroll
+    
+  end
+  
+  #speed
+  
+  def storespeed
+    
+    return @speed
+    
+  end
+  
+  #action count
+  
+  def storeaction
+    
+    return @actioncount
+    
+  end
+    
+  #character id number
+  
+  def storeid
+    
+    return @character_id
+    
+  end
+  
+  #Hp max
+  
+  def storehpmax
+    
+    return @hpmax
+    
+  end
+  
+  #Current Hp
+  
+  def storehpcurrent
+    
+    return @hpcurrent
+    
+  end
+  
+  #Armor Class
+  def storeac
+    
+    return @ac
+    
+  end
+  
+  #Melee Range
+  def storemr
+    
+    return @meleerange
+    
+  end
+  
+  #Ranged Range
+  def storerr
+    
+    return @rangerange
+    
+  end
+  
+  #Melee Modifier
+  def storemelmod
+    
+    return @meleemod
+    
+  end
+  
+  #Range Modifier
+  def storeranmod
+    
+    return @rangemod
+    
+  end
+  
+  #Damage Min
+  def storedmin
+    
+    return @dmgminmelee
+    
+  end
+  
+  #Damage Max
+  def storedmax
+    
+    return @dmgmaxmelee
+    
+  end
+  
+  #Damage Min Ranged
+  def storedminr
+    
+    return @dmgminrange
+    
+  end
+  
+  #Damage Max Ranged
+  def storedmaxr
+    
+    return @dmgmaxrange
+    
+  end
+  
+end
+
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+# TACTICS BATTLE SYSTEM ====================================================
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+class Tactics_Battle
+  
+  attr_reader   :combatants
+  
+  def initialize
+    
+    @combatants = []
+    @combatantcount = 0
+    @turnorder = []
+    @nextturn = 0
+    @roundturn = 1
+    @currentturn
+    @target
+    @moves = 0
+    @actions = 0
+    @moveroute = []
+    @currentmovenum = 0
+    @makemovenum = 0
+    @selected = 0
+    @teamone = []
+    @teamtwo = []
+    @teamonecount = 0
+    @teamtwocount = 0
+    @teamoneplace = 0
+    @teamtwoplace = 0
+  end
+  
+#---------------------------------------------------------------------
+# determines who is in the battle
+#---------------------------------------------------------------------
+
+  def determine_combatants
+    
+    $game_variables[45] = @combatantcount
+    
+  end
+  
+  
+  def add_combatant(selected, team)
+    
+    @combatants[@combatantcount] = selected
+    @combatantcount += 1
+  
+    if team == 1 then
+      @teamone[@teamonecount] = selected
+      @teamonecount += 1
+    elsif team == 2 then
+      @teamtwo[@teamtwocount] = selected
+      @teamtwocount += 1
+    else
+      puts error
+    end
+    
+  end
+  
+  def teamshuffle
+    @teamone.shuffle!
+    @teamtwo.shuffle!
+    @teamoneplace = 0
+    @teamtwoplace = 0
+  end
+  
+  def teamoneplace
+    puts @teamoneplace 
+    puts "this is teamoneplace"
+    @teamoneplace += 1
+    
+  end
+  
+  def getteamoneplace
+    unless @teamtwo[@teamoneplace] == nil then
+    
+      return @teamone[@teamoneplace].storeid
+    
+    end
+    
+  end
+  
+  def teamtwoplace
+    puts @teamtwoplace 
+    puts "this is teamtwoplace"
+    @teamtwoplace += 1
+  end
+  
+  def getteamtwoplace
+    unless @teamtwo[@teamtwoplace] == nil then
+    
+      return @teamtwo[@teamtwoplace].storeid
+
+    end
+    
+  end
+  
+  def getputs
+    puts @teamtwo
+    puts @teamone
+  end
+#---------------------------------------------------------------------
+# Determines the turn order
+#---------------------------------------------------------------------
+  
+  def determine_order
+    
+    combatants = @combatantcount
+    place = 0
+    
+    while combatants > 0 do
+      
+      @combatants[place].initiativeroll
+      place = place + 1
+      combatants = combatants -1
+      
+    end
+    
+    @turnorder = Array.new(@combatants)
+    @turnorder.sort! {|a,b| b.storeinitiative <=> a.storeinitiative}
+    
+  end
+  
+
+#---------------------------------------------------------------------
+# This is the turn options ===============================================
+#---------------------------------------------------------------------
+
+  def determineturn
+    
+    if @nextturn == 1 then
+      
+      if @roundturn < @combatantcount then
+      
+        @roundturn = @roundturn + 1
+        @nextturn = 0
+        
+      else
+      end
+      
+    else
+    end
+      
+    if @nextturn == 1 then
+      
+      if @roundturn == @combatantcount then
+      
+        @roundturn = 1
+        @nextturn = 0
+        
+      else
+      end
+      
+      
+    else
+    end
+    
+    @currentturn = @turnorder[@roundturn - 1]
+    $game_variables[41] = @roundturn
+    self.turnsetup
+    
+  end
+  
+#---------------------------------------------------------------------
+# Turn Starter or Ender 
+#---------------------------------------------------------------------
+
+  def can_move
+   
+    if @actions == 0 and @moves == 0 then
+      
+     @nextturn = 1
+     $game_switches[2] = 0
+     $game_switches[8] = 0
+     self.determineturn
+     
+   else
+     
+     if @moves == 0 then
+       
+       $game_switches[2] = 1
+       
+     end
+     
+     if @actions == 0 then
+       
+       $game_switches[8] = 1
+       
+     end
+     
+     if @actions > 0 or @moves > 0 then
+       
+       $game_switches[3] = 1
+       
+     end
+     
+    end
+   
+  end
+  
+#---------------------------------------------------------------------
+# Turn Setup
+#---------------------------------------------------------------------
+
+  def turnsetup
+    
+    @moves = @currentturn.storespeed/5
+    @actions = @currentturn.storeaction
+    $game_variables[1] = @currentturn.storeid
+    $game_variables[2] = @currentturn.storehpmax
+    $game_variables[3] = @currentturn.storehpcurrent
+    $game_variables[4] = @moves
+    $game_variables[5] = @actions
+    $game_switches[5] = nil
+    
+  end
+  
+#---------------------------------------------------------------------
+# Move and Action Tracker during turns
+#---------------------------------------------------------------------
+  
+  def matracker
+    
+    @moves = $game_variables[4]
+    @actions = $game_variables[5]
+    
+  end
+  
+#---------------------------------------------------------------------
+# Move route adding moves
+#---------------------------------------------------------------------
+  
+  def moverouteadd
+    
+    @currentmovenum = @currentmovenum + 1
+    @moveroute[@currentmovenum - 1] = $game_variables[21]
+    
+    
+  end
+  
+#---------------------------------------------------------------------
+# Move route making moves
+#---------------------------------------------------------------------
+    
+  def setthrough(event)
+    
+    through = RPG::MoveRoute.new
+    through.list = []
+
+    through.list.push( RPG::MoveCommand.new(37, []) )
+    through.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(through)
+    
+  end
+  
+  def setthroughoff(event)
+    
+    through = RPG::MoveRoute.new
+    through.list = []
+
+    through.list.push( RPG::MoveCommand.new(38, []) )
+    through.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(through)
+    
+  end
+  
+  def moveroutemakemarktwo(event)
+    
+    mr = RPG::MoveRoute.new
+    mr.repeat = false
+    mr.wait = true
+    mr.list = []
+    moveroutestep = 0
+
+    mr.list.push( RPG::MoveCommand.new(37, []) )
+    for w in 1..@currentmovenum
+    mr.list.push( RPG::MoveCommand.new(@moveroute[moveroutestep], []) )
+    
+    moveroutestep += 1
+    w += 1
+    end
+    mr.list.push( RPG::MoveCommand.new(38, []) )
+    mr.list.push( RPG::MoveCommand.new)
+    
+    event.force_move_route(mr)
+    Fiber.yield while event.move_route_forcing
+
+      
+      @currentmovenum = 0
+      @makemovenum = 0
+      @moveroute = []
+      
+    
+  end
+  
+  #for clearing this between cancels
+  def clearroute
+    @moveroute.clear
+    @currentmovenum = 0
+  end
+  
+#---------------------------------------------------------------------
+# When choosing target
+#---------------------------------------------------------------------
+  
+  def settarget(target)
+    
+    @target = target
+    $game_variables[53] = target.storeid
+    
+  end
+  
+  #set target display stats
+  
+  def targetdisplay
+    
+    
+    
+    $game_variables[25] = @target.storeid
+    $game_variables[26] = @target.storehpmax
+    $game_variables[27] = @target.storehpcurrent
+    $game_variables[28] = @target.storeac
+    
+    chancetohitmelee = (((20 - (@target.storeac - @currentturn.storemelmod)))*100)/20
+    chancetohitrange = (((20 - (@target.storeac - @currentturn.storeranmod)))*100)/20
+    
+    $game_variables[34] = @currentturn.storedmin
+    $game_variables[35] = @currentturn.storedmax
+    $game_variables[36] = chancetohitmelee
+    $game_variables[37] = chancetohitrange
+    $game_variables[39] = @currentturn.storedminr
+    $game_variables[40] = @currentturn.storedmaxr
+
+  end
+  
+#---------------------------------------------------------------------
+# When target is chosen
+#---------------------------------------------------------------------
+
+  def playattack
+    
+    acvalue = @target.storeac
+    attackvalue = 1 + rand(20) + @currentturn.storemelmod
+    damage = @currentturn.storedmin + rand(@currentturn.storedmax - @currentturn.storedmin)
+    $game_variables[33] = damage
+    
+    if attackvalue >= acvalue then
+      
+      $game_switches[16] = true
+      
+    else
+    end
+    
+  end
+  
+#---------------------------------------------------------------------
+# When target is chosen for ranged attacks
+#---------------------------------------------------------------------
+
+  def playattackrange
+    
+    acvalue = @target.storeac
+    attackvalue = 1 + rand(20) + @currentturn.storeranmod
+    damage = @currentturn.storedminr + rand(@currentturn.storedmaxr - @currentturn.storedminr)
+    $game_variables[33] = damage
+    
+    if attackvalue >= acvalue then
+      
+      $game_switches[16] = true
+      
+    else
+    end
+    
+  end
+  
+#---------------------------------------------------------------------
+# Line of Sight
+#---------------------------------------------------------------------
+  
+ def lineofsight
+   
+   distance = $game_variables[43]
+   targetx = $game_variables[23]
+   targety = $game_variables[24]
+   attackerx = $game_variables[6]
+   attackery = $game_variables[7]
+   
+   dy = 0
+   dx = 0
+   x = attackerx
+   y = attackery
+   quadrantx = attackerx - targetx
+   quadranty = attackery - targety
+   
+     #First Quadrant
+     if quadrantx < 0 and quadranty < 0
+     
+       quadrant = 1
+       dx = targetx - attackerx
+       dy = targety - attackery
+       
+     #Third Quadrant
+     elsif quadrantx > 0 and quadranty > 0
+     
+       quadrant = 3
+       dx = attackerx - targetx
+       dy = attackery - targety 
+       
+     #Second Quadrant
+     elsif quadrantx < 0 and quadranty > 0
+     
+       quadrant = 2
+       dx = targetx - attackerx
+       dy = attackery - targety 
+       
+     #Fourth Quadrant
+     elsif quadrantx > 0 and quadranty < 0
+     
+       quadrant = 4
+       dx = attackerx - targetx
+       dy = targety - attackery
+     
+       end
+   
+   
+   delta = 2*dy-dx
+   
+   # test = 90 this lets you see the coordinates in debug
+   for checked in 1..distance
+    
+     #First Quadrant
+     if quadrantx < 0 and quadranty < 0
+     
+       quadrant = 1
+       if delta > 0
+       y = y + 1
+       delta = delta - 2*dx
+     
+       end
+     
+     checked = checked + 1
+     x = x + 1
+     delta = delta + 2*dy
+    
+     #Third Quadrant
+     elsif quadrantx > 0 and quadranty > 0
+     
+       quadrant = 3
+       if delta > 0
+       y = y - 1
+       delta = delta - 2*dx
+     
+       end
+     
+     checked = checked + 1
+     x = x - 1
+     delta = delta + 2*dy
+
+     #Second Quadrant
+     elsif quadrantx < 0 and quadranty > 0
+     
+       quadrant = 2
+       if delta > 0
+       y = y - 1
+       delta = delta - 2*dx
+     
+       end
+     
+     checked = checked + 1
+     x = x + 1
+     delta = delta + 2*dy
+   
+     #Fourth Quadrant
+     elsif quadrantx > 0 and quadranty < 0
+     
+       quadrant = 4
+       if delta > 0
+       y = y + 1
+       delta = delta - 2*dx
+     
+       end
+     
+     checked = checked + 1
+     x = x - 1
+     delta = delta + 2*dy
+
+     #Vertical down
+     elsif quadrantx == 0 and quadranty < 0
+     
+       y = y + 1
+       
+     #Vertical up
+     elsif quadrantx == 0 and quadranty > 0
+       
+       y = y - 1
+       
+     #Horizontal right
+     elsif quadrantx < 0 and quadranty == 0
+     
+       x = x + 1
+       
+     #Horizontal left
+     elsif quadrantx > 0 and quadranty == 0
+     
+       x = x - 1
+       
+     end
+     
+   
+   
+     
+     if $game_map.region_id(x, y) == 1
+       $game_switches[19] = true
+     end
+    # $game_variables[test] = x  Debugging tracking
+    # test = test + 1
+    # $game_variables[test] = y
+    # test = test + 1
+       end
+     
+     
+     end
+
+#---------------------------------------------------------------------
+# When choosing Aoe Location
+#---------------------------------------------------------------------
+
+def calculate_aoe
+  
+  size = $game_variables[46]
+  x = $game_variables[17]
+  y = $game_variables[18]
+  y += 1
+  area = 1
+  direction = 1
+  
+  for area in 1..size
+    for side in 1..area
+      if direction == 1
+        y += 1
+        x += 1
+      elsif direction == 2
+        y += 1
+        x -= 1
+      elsif direction == 3
+        y -= 1
+        x -= 1
+      else
+        y -= 1
+        x += 1
+      end
+      
+      #checks coordinates of events against saved coordinates
+         $game_map.events.each do |i, event|
+           
+           evx = event.x
+           evy = event.y
+           if x == evx and y == evy
+             event.get_charid
+           end
+           
+         end
+         
+      side +=1
+    end
+    unless direction == 4
+      direction +=1
+    else
+      direction = 1
+    end
+    area += 1
+  end
+  
+end
+
+#---------------------------------------------------------------------
+# Output test for debugging
+#---------------------------------------------------------------------
+
+  def output
+    
+    $game_variables[96] = 0
+    $game_variables[97] = 0
+    $game_variables[98] = 0
+    $game_variables[99] = 0
+    $game_variables[100] = 0
+  end
+
+  
+#---------------------------------------------------------------------
+# Testing event labeling and tracking
+#---------------------------------------------------------------------    
+  
+
+def tracking
+  
+ $game_map.events.each do |i, event|
+           
+           evx = event.x
+           evy = event.y
+           evchar = event.get_charid
+           event.get_event
+           
+         end
+         
+       end
+     end
+      
+rgss_main { SceneManager.run }

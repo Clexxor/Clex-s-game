@@ -1,0 +1,6 @@
+$morton = Tactics_Character.new
+$morton.set_basestats(15,14,14,10,12,8)
+$morton.set_secstats(30,2,2,1)
+$morton.set_hstats(12,12,15)
+$morton.set_dstats(4,4,3,10,3,10,1,10)
+$morton.setid(2)
